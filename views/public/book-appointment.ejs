@@ -1,0 +1,167 @@
+<!-- Appointment Booking Section -->
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Book Your Appointment</h1>
+        
+        <div class="row">
+            <!-- Calendar Section -->
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Select Date</h5>
+                        <div id="calendar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Booking Form -->
+            <div class="col-md-6">
+                <div class="appointment-form">
+                    <h5 class="mb-4">Appointment Details</h5>
+                    
+                    <!-- Success Message -->
+                    <div id="successMessage" class="alert alert-success d-none" role="alert">
+                        Your appointment has been booked successfully! We'll contact you shortly to confirm.
+                    </div>
+
+                    <form id="appointmentForm" action="/appointments" method="POST">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">Phone Number (Optional)</label>
+                            <input type="tel" class="form-control" id="phone" name="phone">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="appointment_date" class="form-label">Date</label>
+                            <input type="date" class="form-control" id="appointment_date" name="appointment_date" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="appointment_time" class="form-label">Time</label>
+                            <select class="form-select" id="appointment_time" name="appointment_time" required>
+                                <option value="">Select a time</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="reason" class="form-label">Reason for Appointment</label>
+                            <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Book Appointment</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Appointment Information -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>What to Expect</h3>
+                <ul>
+                    <li>Personalized styling consultation</li>
+                    <li>One-on-one attention from our expert stylists</li>
+                    <li>Access to our full collection</li>
+                    <li>Complimentary refreshments</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h3>Appointment Duration</h3>
+                <p>Each appointment lasts approximately 1 hour. Please arrive 5-10 minutes early to ensure you get the full experience.</p>
+                <h3>Cancellation Policy</h3>
+                <p>We require 24 hours notice for appointment cancellations. Please contact us if you need to reschedule.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Include FullCalendar CSS and JS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const calendarEl = document.getElementById('calendar');
+        const dateInput = document.getElementById('appointment_date');
+        const timeInput = document.getElementById('appointment_time');
+        let availableSlots = [];
+        let availableDates = new Set();
+        let slotsByDate = {};
+
+        // Fetch available slots from backend
+        fetch('/appointments/available-slots')
+            .then(res => res.json())
+            .then(data => {
+                availableSlots = data.slots;
+                slotsByDate = {};
+                availableSlots.forEach(slot => {
+                    if (!slotsByDate[slot.date]) slotsByDate[slot.date] = [];
+                    slotsByDate[slot.date].push(slot.time);
+                    availableDates.add(slot.date);
+                });
+                renderCalendar();
+            });
+
+        function renderCalendar() {
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                selectable: true,
+                selectAllow: function(selectInfo) {
+                    const dateStr = selectInfo.startStr;
+                    return availableDates.has(dateStr);
+                },
+                dateClick: function(info) {
+                    const dateStr = info.dateStr;
+                    if (!availableDates.has(dateStr)) return;
+                    dateInput.value = dateStr;
+                    updateTimeOptions(dateStr);
+                },
+                dayCellDidMount: function(arg) {
+                    if (!availableDates.has(arg.date.toISOString().slice(0,10))) {
+                        arg.el.classList.add('fc-day-disabled');
+                        arg.el.style.background = '#f8d7da';
+                        arg.el.style.cursor = 'not-allowed';
+                    }
+                },
+            });
+            calendar.render();
+        }
+
+        function updateTimeOptions(dateStr) {
+            const times = slotsByDate[dateStr] || [];
+            timeInput.innerHTML = '';
+            if (times.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = 'No times available';
+                timeInput.appendChild(opt);
+                timeInput.disabled = true;
+            } else {
+                times.forEach(time => {
+                    const opt = document.createElement('option');
+                    opt.value = time;
+                    opt.textContent = time;
+                    timeInput.appendChild(opt);
+                });
+                timeInput.disabled = false;
+            }
+        }
+
+        // When date input changes (manual), update time options
+        dateInput.addEventListener('change', function() {
+            updateTimeOptions(this.value);
+        });
+    });
+</script> 

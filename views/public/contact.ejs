@@ -1,0 +1,110 @@
+<!-- Contact Section -->
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Contact Us</h1>
+        
+        <div class="row">
+            <!-- Contact Information -->
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Get in Touch</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-3">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <strong>Address:</strong><br>
+                                123 Fashion Street<br>
+                                Style City, ST 12345
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-phone me-2"></i>
+                                <strong>Phone:</strong><br>
+                                (123) 456-7890
+                            </li>
+                            <li class="mb-3">
+                                <i class="fas fa-envelope me-2"></i>
+                                <strong>Email:</strong><br>
+                                info@clothing-showcase.com
+                            </li>
+                            <li>
+                                <i class="fas fa-clock me-2"></i>
+                                <strong>Hours:</strong><br>
+                                Monday - Friday: 9AM - 6PM<br>
+                                Saturday: 10AM - 4PM<br>
+                                Sunday: Closed
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="col-md-8">
+                <div class="contact-form">
+                    <h5 class="mb-4">Send us a Message</h5>
+                    
+                    <!-- Success Message -->
+                    <div id="successMessage" class="alert alert-success d-none" role="alert">
+                        Your message has been sent successfully! We'll get back to you soon.
+                    </div>
+
+                    <form id="contactForm" action="/contact" method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Map Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center mb-4">Find Us</h3>
+                <div class="ratio ratio-16x9">
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12345.6789!2d-73.9876543!3d40.7654321!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDDCsDQ1JzU1LjYiTiA3M8KwNTknMTUuNiJX!5e0!3m2!1sen!2sus!4v1234567890!5m2!1sen!2sus" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Social Media Section -->
+<section class="py-5">
+    <div class="container text-center">
+        <h3 class="mb-4">Follow Us on Social Media</h3>
+        <div class="social-links">
+            <a href="#" class="me-3"><i class="fab fa-instagram fa-2x"></i></a>
+            <a href="#" class="me-3"><i class="fab fa-facebook fa-2x"></i></a>
+            <a href="#" class="me-3"><i class="fab fa-tiktok fa-2x"></i></a>
+        </div>
+    </div>
+</section> 

@@ -1,0 +1,58 @@
+<!-- Gallery Header -->
+<section class="py-5">
+    <div class="container">
+        <h1 class="text-center mb-5">Our Collection</h1>
+        
+        <!-- Category Filter -->
+        <div class="mb-4 d-flex justify-content-center">
+            <div class="btn-group" role="group">
+                <a href="/gallery" class="btn btn-outline-primary <%= !category ? 'active' : '' %>">All</a>
+                <% categories.forEach(cat => { %>
+                    <a href="/gallery?category=<%= cat.id %>" 
+                       class="btn btn-outline-primary <%= category == cat.id ? 'active' : '' %>">
+                        <%= cat.name %>
+                    </a>
+                <% }); %>
+            </div>
+        </div>
+
+        <!-- Gallery Grid -->
+        <div class="row">
+            <% items.forEach(item => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="gallery-item">
+                        <img src="<%= item.image_url %>" 
+                             alt="<%= item.name %>" 
+                             class="img-fluid rounded"
+                             data-bs-toggle="tooltip" 
+                             title="<%= item.name %>">
+                        <div class="mt-2">
+                            <h5><%= item.name %></h5>
+                            <p class="text-muted"><%= item.category_name %></p>
+                            <% if (item.price) { %>
+                                <p class="fw-bold">$<%= item.price.toFixed(2) %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+
+        <!-- No Items Message -->
+        <% if (items.length === 0) { %>
+            <div class="text-center py-5">
+                <h3>No items found in this category</h3>
+                <p>Please select a different category or check back later for new arrivals.</p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<!-- Book Appointment CTA -->
+<section class="py-5 bg-light">
+    <div class="container text-center">
+        <h2>Ready to Try Something New?</h2>
+        <p class="lead mb-4">Book a personal styling appointment to discover your perfect look</p>
+        <a href="/book-appointment" class="btn btn-primary btn-lg">Book Appointment</a>
+    </div>
+</section> 

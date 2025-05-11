@@ -1,0 +1,151 @@
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <h5 class="card-title">Total Appointments</h5>
+                <h2 class="display-4"><%= stats.total_appointments %></h2>
+                <p class="text-muted">All time</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <h5 class="card-title">Pending Appointments</h5>
+                <h2 class="display-4"><%= stats.pending_appointments %></h2>
+                <p class="text-muted">Awaiting confirmation</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card dashboard-card">
+            <div class="card-body">
+                <h5 class="card-title">This Week</h5>
+                <h2 class="display-4"><%= stats.this_week_appointments %></h2>
+                <p class="text-muted">Upcoming appointments</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Appointments -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Upcoming Appointments</h5>
+    </div>
+    <div class="card-body">
+        <% if (upcomingAppointments.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Date & Time</th>
+                            <th>Contact Email</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% upcomingAppointments.forEach(appointment => { %>
+                            <tr>
+                                <td><%= appointment.client_name %></td>
+                                <td>
+                                    <%= new Date(appointment.appointment_date).toLocaleDateString() %><br>
+                                    <%= appointment.appointment_time %>
+                                </td>
+                                <td>
+                                    <%= appointment.client_email || 'N/A' %><br>
+                                    <%= appointment.client_phone || 'N/A' %>
+                                </td>
+                                <td><%= appointment.reason %></td>
+                                <td>
+                                    <span class="badge bg-<%= 
+                                        appointment.status === 'pending' ? 'warning' : 
+                                        appointment.status === 'accepted' ? 'success' : 'danger' 
+                                    %>">
+                                        <%= appointment.status %>
+                                    </span>
+                                </td>
+                                <td>
+                                    <select class="form-select form-select-sm appointment-status" data-id="<%= appointment.id %>">
+                                        <option value="pending" <%= appointment.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                                        <option value="accepted" <%= appointment.status === 'accepted' ? 'selected' : '' %>>Accept</option>
+                                        <option value="declined" <%= appointment.status === 'declined' ? 'selected' : '' %>>Decline</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <p class="text-center text-muted">No upcoming appointments</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-plus fa-3x mb-3 text-primary"></i>
+                <h5>Manage Availability</h5>
+                <p>Set your working hours and block dates</p>
+                <a href="/admin/availability" class="btn btn-outline-primary">Go to Availability</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-user-edit fa-3x mb-3 text-primary"></i>
+                <h5>Update Profile</h5>
+                <p>Manage your account information</p>
+                <a href="/admin/profile" class="btn btn-outline-primary">Go to Profile</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card dashboard-card">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-alt fa-3x mb-3 text-primary"></i>
+                <h5>View Calendar</h5>
+                <p>See all appointments in calendar view</p>
+                <a href="/admin/appointments" class="btn btn-outline-primary">View Calendar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle appointment status change
+$(document).ready(function() {
+    $('.appointment-status').on('change', function() {
+        const select = $(this);
+        const appointmentId = select.data('id');
+        const newStatus = select.val();
+        $.ajax({
+            url: `/admin/appointments/${appointmentId}/status`,
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ status: newStatus }),
+            success: function(res) {
+                // Update badge color and text
+                const badge = select.closest('tr').find('span.badge');
+                badge.text(newStatus);
+                badge.removeClass('bg-warning bg-success bg-danger');
+                if (newStatus === 'pending') badge.addClass('bg-warning');
+                else if (newStatus === 'accepted') badge.addClass('bg-success');
+                else if (newStatus === 'declined') badge.addClass('bg-danger');
+            },
+            error: function(xhr) {
+                alert('Failed to update status. ' + (xhr.responseJSON?.error || 'Please try again.'));
+            }
+        });
+    });
+});
+</script> 

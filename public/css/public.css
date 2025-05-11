@@ -1,0 +1,174 @@
+/* Reset and base styles */
+body {
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    background: #f8f9fa;
+    color: #222;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: #222;
+}
+
+a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+section {
+    margin-bottom: 3rem;
+}
+
+/* Hero Section */
+.hero-section {
+    height: 420px;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    position: relative;
+    border-radius: 0 0 2rem 2rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    border-radius: 0 0 2rem 2rem;
+}
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+.hero-content h1 {
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+}
+.hero-content p {
+    font-size: 1.3rem;
+    margin-bottom: 2rem;
+}
+
+/* Cards & Gallery */
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+}
+.card-img-top, .gallery-item img {
+    border-radius: 1rem 1rem 0 0;
+    height: 220px;
+    object-fit: cover;
+}
+.card-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+/* Gallery grid */
+.gallery-item {
+    margin-bottom: 30px;
+}
+
+/* Buttons */
+.btn-primary, .btn-outline-primary {
+    border-radius: 2rem;
+    font-weight: 600;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+}
+.btn-primary {
+    background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+    border: none;
+}
+.btn-primary:hover {
+    background: linear-gradient(90deg, #2575fc 0%, #6a11cb 100%);
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #e0e0e0;
+    box-shadow: none;
+    font-size: 1rem;
+}
+.form-control:focus, .form-select:focus {
+    border-color: #2575fc;
+    box-shadow: 0 0 0 0.2rem rgba(37,117,252,0.08);
+}
+
+/* Section backgrounds */
+.bg-light {
+    background: #f4f7fb !important;
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+    background: #222;
+    color: #fff;
+    border-radius: 2rem 2rem 0 0;
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.07);
+}
+footer h5 {
+    color: #fff;
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+footer a {
+    color: #b3c7f7;
+    text-decoration: none;
+}
+footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+.social-links a {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    color: #b3c7f7;
+    transition: color 0.2s;
+}
+.social-links a:hover {
+    color: #fff !important;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+    .hero-section {
+        height: 260px;
+        border-radius: 0 0 1rem 1rem;
+    }
+    .card-img-top, .gallery-item img {
+        height: 140px;
+    }
+}
+@media (max-width: 576px) {
+    .hero-section {
+        height: 160px;
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+    .card-img-top, .gallery-item img {
+        height: 90px;
+    }
+    h1, .hero-content h1 {
+        font-size: 1.5rem;
+    }
+} 

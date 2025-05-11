@@ -1,0 +1,228 @@
+<!-- Weekly Schedule -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Weekly Schedule</h5>
+    </div>
+    <div class="card-body">
+        <form id="availabilityForm" action="/admin/availability" method="POST">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Day</th>
+                            <th>Available</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']; %>
+                        <% days.forEach((day, index) => { %>
+                            <tr>
+                                <td><%= day %></td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input availability-toggle" 
+                                               type="checkbox" 
+                                               name="availability[<%= index %>][is_available]"
+                                               <%= availability[index] && availability[index].is_available ? 'checked' : '' %>>
+                                    </div>
+                                </td>
+                                <td>
+                                    <input type="time" 
+                                           class="form-control start-time" 
+                                           name="availability[<%= index %>][start_time]"
+                                           value="<%= availability[index] ? availability[index].start_time : '09:00' %>"
+                                           <%= !availability[index] || !availability[index].is_available ? 'disabled' : '' %>>
+                                </td>
+                                <td>
+                                    <input type="time" 
+                                           class="form-control end-time" 
+                                           name="availability[<%= index %>][end_time]"
+                                           value="<%= availability[index] ? availability[index].end_time : '17:00' %>"
+                                           <%= !availability[index] || !availability[index].is_available ? 'disabled' : '' %>>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Save Schedule</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Blocked Dates -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Blocked Dates</h5>
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#blockDateModal">
+            <i class="fas fa-plus me-2"></i>Add Blocked Date
+        </button>
+    </div>
+    <div class="card-body">
+        <% if (blockedDates.length > 0) { %>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Reason</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% blockedDates.forEach(date => { %>
+                            <tr>
+                                <td><%= new Date(date.date).toLocaleDateString() %></td>
+                                <td><%= date.reason %></td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm delete-blocked-date" data-id="<%= date.id %>">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } else { %>
+            <p class="text-center text-muted">No blocked dates</p>
+        <% } %>
+    </div>
+</div>
+
+<!-- Block Date Modal -->
+<div class="modal fade" id="blockDateModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Block Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="blockDateForm" action="/admin/block-dates" method="POST">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">Date</label>
+                        <input type="date" class="form-control" id="date" name="date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason</label>
+                        <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="blockDateForm" class="btn btn-primary">Block Date</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Enable/disable time inputs based on availability toggle
+    document.querySelectorAll('.availability-toggle').forEach(toggle => {
+        toggle.addEventListener('change', function() {
+            const row = this.closest('tr');
+            const startTime = row.querySelector('.start-time');
+            const endTime = row.querySelector('.end-time');
+            startTime.disabled = !this.checked;
+            endTime.disabled = !this.checked;
+        });
+    });
+
+    // Validation for availability form
+    document.getElementById('availabilityForm').addEventListener('submit', function(e) {
+        let valid = true;
+        let atLeastOne = false;
+        let errorMsg = '';
+        document.querySelectorAll('.availability-toggle').forEach((toggle, idx) => {
+            if (toggle.checked) {
+                atLeastOne = true;
+                const row = toggle.closest('tr');
+                const start = row.querySelector('.start-time').value;
+                const end = row.querySelector('.end-time').value;
+                if (!start || !end || end <= start) {
+                    valid = false;
+                    errorMsg = `Please ensure end time is after start time for ${row.children[0].textContent}.`;
+                }
+            }
+        });
+        if (!atLeastOne) {
+            valid = false;
+            errorMsg = 'Please mark at least one day as available.';
+        }
+        if (!valid) {
+            e.preventDefault();
+            alert(errorMsg);
+        }
+    });
+
+    // AJAX add blocked date
+    document.getElementById('blockDateForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const data = new FormData(form);
+        fetch(form.action, {
+            method: 'POST',
+            body: data
+        })
+        .then(response => response.ok ? response.text() : Promise.reject(response))
+        .then(() => {
+            showSuccess('Date blocked successfully!');
+            setTimeout(() => location.reload(), 1000);
+        })
+        .catch(() => {
+            alert('Error blocking date.');
+        });
+    });
+
+    // AJAX delete blocked date
+    document.querySelectorAll('.delete-blocked-date').forEach(button => {
+        button.addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete this blocked date?')) {
+                const id = this.dataset.id;
+                fetch(`/admin/blocked-dates/${id}`, {
+                    method: 'DELETE'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showSuccess('Blocked date deleted!');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        alert('Error deleting blocked date');
+                    }
+                });
+            }
+        });
+    });
+
+    // Show a temporary success message
+    function showSuccess(message) {
+        let alert = document.getElementById('ajax-success-alert');
+        if (!alert) {
+            alert = document.createElement('div');
+            alert.id = 'ajax-success-alert';
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.style.position = 'fixed';
+            alert.style.top = '70px';
+            alert.style.right = '20px';
+            alert.style.zIndex = 9999;
+            alert.innerHTML = `
+                <span>${message}</span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alert);
+        } else {
+            alert.querySelector('span').textContent = message;
+            alert.classList.add('show');
+        }
+        setTimeout(() => {
+            if (alert) alert.classList.remove('show');
+        }, 2000);
+    }
+</script> 
